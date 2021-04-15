@@ -150,7 +150,7 @@ void DOWSER01PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   G4double Eneutron(0), x0(0), y0(0), z0(0), px0(0), py0(0), pz0(0), px1(0), pz1(0), rotationAngle(0), theta(0), phi(0), x1(0), y1(0), 
   z1(0), Al_z(0), Xe_z(0), sourceRadius(0), HDPE_z(0), spread(0), spread_angle(0);
   G4int copyNo(0), iflag(0);
-  G4double xx(0), yy(0), zz(0), pPhiH(0), pVerH(0), xDiff(0), yDiff(0), zDiff(0);
+  G4double xx(0), yy(0), zz(0), pPhiH(0), pVerH(0), xDiff(0), yDiff(0), zDiff(0), U_torus(0), V_torus(0), C(0), A(0);
   // G4double xx(0), yy(0), zz(0), pPhiH(0), pVerH(0);
   // In order to avoid dependence of PrimaryGeneratorAction
   // on DetectorConstruction class we get world volume
@@ -197,10 +197,15 @@ void DOWSER01PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   //Randomly generate rotation angle
   rotationAngle = pi * G4UniformRand() + pi/2;
 
-  //calculate cartesian coordinates for neutron origin
-  x1 = sourceRadius * sin(rotationAngle); //-1.25 + 2.5 * G4UniformRand();
-  y1 = 0; //-1.25 + 2.5 * G4UniformRand();
-  z1 = sourceRadius * cos(rotationAngle) + Xe_z/2 + Al_z + HDPE_z/2;
+  U_torus = 2 * pi * G4UniformRand();
+  V_torus = 2 * pi * G4UniformRand();
+  C = 1;
+  A = 0.5;
+
+  //Cartesian coordinate representation of a Toroidal surface following the wolfram website definition
+  x1 = (C + A * cos(V_torus)) * cos(U_torus);
+  y1 = (C + A * cos(V_torus)) * sin(U_torus);
+  z1 = A * sin (V_torus);
 
   //Randonly generate spherical angle for momentum in specified range
   spread_angle = 6 * pi/180;
@@ -212,24 +217,16 @@ void DOWSER01PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   phi = acos(2*(1 - V) - 1) ; //-spread_angle + 2*spread_angle*G4UniformRand();
 
   //generate cartesian coordinates for momentum
-  px0 = sin(phi)*cos(theta);
-  py0 = sin(phi)*sin(theta);
-  pz0 = -cos(phi);
-
-  //Rotate momentum vector about y axis through angle rotationAngle
-  px1 = px0*cos(-rotationAngle) - pz0*sin(-rotationAngle);
-  pz1 = px0*sin(-rotationAngle) + pz0*cos(-rotationAngle);
-
-  //x0 = 12;
-  //y0 = -10 + 20 * G4UniformRand();
-  //z0 = -10 + 20 * G4UniformRand();
+  px0 = 0;
+  py0 = 0;
+  pz0 = 1;
 
   xDiff = (cos(rotationAngle)) - x1;
   yDiff =  - y1;
   zDiff = (sin(rotationAngle)) - z1;
 
   fParticleGun->SetParticlePosition(G4ThreeVector(x1, y1, z1));
-  fParticleGun->SetParticleMomentumDirection(G4ThreeVector(px1,py0,pz1));
+  fParticleGun->SetParticleMomentumDirection(G4ThreeVector(px0,py0,pz0));
   info->SetTheta0(rotationAngle*180.0/pi);
   info->SetTheta1(phi*180.0/pi);
   //analysisManager->FillH1(2, rotationAngle*180.0/pi);

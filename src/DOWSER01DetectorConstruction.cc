@@ -304,13 +304,10 @@ G4VPhysicalVolume* DOWSER01DetectorConstruction::Construct()
   // new G4PVPlacement(0, G4ThreeVector(-Xenon_x/8 - Xenon_x/4, Xenon_y/2 + SiPM_y/2, 0), SiPMLogical, "SiPM", XenonLogical, false, 6);
   // new G4PVPlacement(0, G4ThreeVector(-Xenon_x/8 - Xenon_x/4, -Xenon_y/2 - SiPM_y/2, 0), SiPMLogical, "SiPM", XenonLogical, false, 7);
 
-  new G4PVPlacement(0, G4ThreeVector(0, 0, Xenon_z/2 + Al_z + Boron_z + HDPE_z/2), HDPELogical, "HDPE", World, false, 0);
+  //new G4PVPlacement(0, G4ThreeVector(0, 0, Xenon_z/2 + Al_z + Boron_z + HDPE_z/2), HDPELogical, "HDPE", World, false, 0);
 
-  G4VPhysicalVolume* Detector1Physical = new G4PVPlacement(rotMatMinus, G4ThreeVector(prism_l/2 + (Det_x/prism_h)*(Det_z), 0, 0), Detector1Logical, "Detector1", HDPELogical, false, 0);
-  G4VPhysicalVolume* Detector2Physical = new G4PVPlacement(rotMatPlus, G4ThreeVector(-(prism_l/2 + (Det_x/prism_h)*(Det_z)), 0, 0), Detector2Logical, "Detector2", HDPELogical, false, 0);
-
-  //G4VPhysicalVolume* Detector1_rep = new G4PVReplica("Detector1_rep", detSliceLogical, Detector1Logical, kXAxis, nSlices, Det_x/(nSlices)); 
-  //G4VPhysicalVolume* Detector3_rep = new G4PVReplica("Detector3_rep", detSliceLogical, Detector2Logical, kXAxis, nSlices, Det_x/(nSlices)); 
+  //G4VPhysicalVolume* Detector1Physical = new G4PVPlacement(rotMatMinus, G4ThreeVector(prism_l/2 + (Det_x/prism_h)*(Det_z), 0, 0), Detector1Logical, "Detector1", HDPELogical, false, 0);
+  //G4VPhysicalVolume* Detector2Physical = new G4PVPlacement(rotMatPlus, G4ThreeVector(-(prism_l/2 + (Det_x/prism_h)*(Det_z)), 0, 0), Detector2Logical, "Detector2", HDPELogical, false, 0);
 
   //
   // Visualization attributes
