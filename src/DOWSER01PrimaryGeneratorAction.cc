@@ -150,7 +150,7 @@ void DOWSER01PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   G4double Eneutron(0), x0(0), y0(0), z0(0), px0(0), py0(0), pz0(0), px1(0), pz1(0), rotationAngle(0), theta(0), phi(0), x1(0), y1(0), 
   z1(0), Al_z(0), Xe_z(0), sourceRadius(0), HDPE_z(0), spread(0), spread_angle(0);
   G4int copyNo(0), iflag(0);
-  G4double xx(0), yy(0), zz(0), pPhiH(0), pVerH(0), xDiff(0), yDiff(0), zDiff(0), U_torus(0), V_torus(0), C(0), A(0);
+  G4double xx(0), yy(0), zz(0), pPhiH(0), pVerH(0), xDiff(0), yDiff(0), zDiff(0), U_torus(0), V_torus(0), C(0), A(0), B(0), D(0);
   // G4double xx(0), yy(0), zz(0), pPhiH(0), pVerH(0);
   // In order to avoid dependence of PrimaryGeneratorAction
   // on DetectorConstruction class we get world volume
@@ -199,13 +199,14 @@ void DOWSER01PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
   U_torus = 2 * pi * G4UniformRand();
   V_torus = 2 * pi * G4UniformRand();
-  C = 1;
-  A = 0.5;
+  C = 150;
+  A = 100;
+  B = 200;
 
   //Cartesian coordinate representation of a Toroidal surface following the wolfram website definition
   x1 = (C + A * cos(V_torus)) * cos(U_torus);
   y1 = (C + A * cos(V_torus)) * sin(U_torus);
-  z1 = A * sin (V_torus);
+  z1 = B * sin (V_torus);
 
   //Randonly generate spherical angle for momentum in specified range
   spread_angle = 6 * pi/180;
@@ -217,9 +218,9 @@ void DOWSER01PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   phi = acos(2*(1 - V) - 1) ; //-spread_angle + 2*spread_angle*G4UniformRand();
 
   //generate cartesian coordinates for momentum
-  px0 = 0;
-  py0 = 0;
-  pz0 = 1;
+  px0 = 1 - 2*G4UniformRand(); //0;
+  py0 = 1 - 2*G4UniformRand(); //0;
+  pz0 = 1 - 2*G4UniformRand(); //1;
 
   xDiff = (cos(rotationAngle)) - x1;
   yDiff =  - y1;
