@@ -150,7 +150,7 @@ void DOWSER01PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   G4double Eneutron(0), x0(0), y0(0), z0(0), px0(0), py0(0), pz0(0), px1(0), pz1(0), rotationAngle(0), theta(0), phi(0), x1(0), y1(0), 
   z1(0), Al_z(0), Xe_z(0), sourceRadius(0), HDPE_z(0), spread(0), spread_angle(0);
   G4int copyNo(0), iflag(0);
-  G4double xx(0), yy(0), zz(0), pPhiH(0), pVerH(0), xDiff(0), yDiff(0), zDiff(0), U_torus(0), V_torus(0), C(0), A(0), B(0), D(0);
+  G4double xx(0), yy(0), zz(0), pPhiH(0), pVerH(0), xDiff(0), yDiff(0), zDiff(0), R(0), Phi(0), Z(0), maxRadius(0), minRadius(0);
   // G4double xx(0), yy(0), zz(0), pPhiH(0), pVerH(0);
   // In order to avoid dependence of PrimaryGeneratorAction
   // on DetectorConstruction class we get world volume
@@ -187,44 +187,24 @@ void DOWSER01PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   analysisManager->FillH1(1, std::log10(Eneutron));
   info->SetEnergyN(Eneutron);
   
-  //
-  Al_z = 0.8 *mm;
-  Xe_z = 7 *mm;
-  HDPE_z = 40*mm;
+  maxRadius = 300;
+  minRadius = 150;
 
-  sourceRadius = 60*cm;  //+ Xe_z/2 + Al_z ;
+  //Sqrt present to correct for point clustering in disk point picking
+  //for more detail: https://mathworld.wolfram.com/DiskPointPicking.html
+  R = maxRadius*sqrt(G4UniformRand() + pow((minRadius/maxRadius), 2));
+  Phi = 2 * pi * G4UniformRand();
+  Z = 400 * (2*G4UniformRand()-1);
 
-  //Randomly generate rotation angle
-  rotationAngle = pi * G4UniformRand() + pi/2;
-
-  U_torus = 2 * pi * G4UniformRand();
-  V_torus = 2 * pi * G4UniformRand();
-  C = 150;
-  A = 100;
-  B = 200;
-
-  //Cartesian coordinate representation of a Toroidal surface following the wolfram website definition
-  x1 = (C + A * cos(V_torus)) * cos(U_torus);
-  y1 = (C + A * cos(V_torus)) * sin(U_torus);
-  z1 = B * sin (V_torus);
-
-  //Randonly generate spherical angle for momentum in specified range
-  spread_angle = 6 * pi/180;
-  G4double max_V = (cos(spread_angle) + 1)/2;
-
-  G4double U = G4UniformRand();
-  G4double V = G4UniformRand() * (1 - max_V);
-  theta = 2*pi*U;
-  phi = acos(2*(1 - V) - 1) ; //-spread_angle + 2*spread_angle*G4UniformRand();
+  //Cylindrical coordinate representation of a Cylindrical surface following the wolfram website definition
+  x1 = R * sin(Phi);
+  y1 = R * cos(Phi);
+  z1 = Z;
 
   //generate cartesian coordinates for momentum
-  px0 = 1 - 2*G4UniformRand(); //0;
-  py0 = 1 - 2*G4UniformRand(); //0;
-  pz0 = 1 - 2*G4UniformRand(); //1;
-
-  xDiff = (cos(rotationAngle)) - x1;
-  yDiff =  - y1;
-  zDiff = (sin(rotationAngle)) - z1;
+  px0 = 1 - 2*G4UniformRand();
+  py0 = 1 - 2*G4UniformRand(); 
+  pz0 = 1 - 2*G4UniformRand(); 
 
   fParticleGun->SetParticlePosition(G4ThreeVector(x1, y1, z1));
   fParticleGun->SetParticleMomentumDirection(G4ThreeVector(px0,py0,pz0));
