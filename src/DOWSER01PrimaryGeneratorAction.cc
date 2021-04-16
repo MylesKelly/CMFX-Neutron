@@ -144,13 +144,32 @@ DOWSER01PrimaryGeneratorAction::~DOWSER01PrimaryGeneratorAction()
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+G4double RadialPDF(G4double x)
+{
+  return exp(-50*pow(x - 0.5, 2));
+  //return -pow(2 * x - 1, 2) + 1;
+}
+
+G4double GenerateNumFromPDF()
+{
+  while(true)
+  {
+    G4double num = G4UniformRand();
+    G4double prob = RadialPDF(num); 
+    if (G4UniformRand() <= prob)
+    {
+      return num;
+    }
+  }
+}
+
 void DOWSER01PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
   // This function is called at the begining of event
   G4double Eneutron(0), x0(0), y0(0), z0(0), px0(0), py0(0), pz0(0), px1(0), pz1(0), rotationAngle(0), theta(0), phi(0), x1(0), y1(0), 
   z1(0), Al_z(0), Xe_z(0), sourceRadius(0), HDPE_z(0), spread(0), spread_angle(0);
   G4int copyNo(0), iflag(0);
-  G4double xx(0), yy(0), zz(0), pPhiH(0), pVerH(0), xDiff(0), yDiff(0), zDiff(0), R(0), Phi(0), Z(0), maxRadius(0), minRadius(0);
+  G4double xx(0), yy(0), zz(0), pPhiH(0), pVerH(0), xDiff(0), yDiff(0), zDiff(0), R(0), Phi(0), Z(0), maxRadius(0), minRadius(0), U(0);
   // G4double xx(0), yy(0), zz(0), pPhiH(0), pVerH(0);
   // In order to avoid dependence of PrimaryGeneratorAction
   // on DetectorConstruction class we get world volume
@@ -190,11 +209,15 @@ void DOWSER01PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   maxRadius = 300;
   minRadius = 150;
 
+  //U = -pow((2*G4UniformRand() - 1), 2) + 1;
+
   //Sqrt present to correct for point clustering in disk point picking
   //for more detail: https://mathworld.wolfram.com/DiskPointPicking.html
-  R = maxRadius*sqrt(G4UniformRand() + pow((minRadius/maxRadius), 2));
+  R = maxRadius*sqrt(GenerateNumFromPDF() + pow((minRadius/maxRadius), 2));
   Phi = 2 * pi * G4UniformRand();
   Z = 400 * (2*G4UniformRand()-1);
+
+  analysisManager->FillH1(16, R);
 
   //Cylindrical coordinate representation of a Cylindrical surface following the wolfram website definition
   x1 = R * sin(Phi);
@@ -213,9 +236,8 @@ void DOWSER01PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   //analysisManager->FillH1(2, rotationAngle*180.0/pi);
   fParticleGun->GeneratePrimaryVertex(anEvent);
   anEvent->SetUserInformation(info);
-
-
 }
+
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 

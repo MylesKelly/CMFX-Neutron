@@ -73,7 +73,7 @@ void DOWSER01RunAction::BeginOfRunAction(const G4Run* run)
   
   // Open an output file
   //
-  G4String fileName = "DOWSER_CMFX_DD_150x200mm_Segmented_Isotropic_100mil";
+  G4String fileName = "CMFX_Neutron_Radius_Test";
   analysisManager->OpenFile(fileName);
   analysisManager->SetFirstHistoId(1);
 
@@ -121,6 +121,8 @@ void DOWSER01RunAction::BeginOfRunAction(const G4Run* run)
   analysisManager->CreateH1("D2b10_3", "Boron-10 Count vs. Rotation Angle in Detector 2, Segment 3", 30, 0, 180);
   analysisManager->CreateH1("D1b10_4", "Boron-10 Count vs. Rotation Angle in Detector 1, Segment 4", 30, 0, 180);
   analysisManager->CreateH1("D2b10_4", "Boron-10 Count vs. Rotation Angle in Detector 2, Segment 4", 30, 0, 180);
+
+  analysisManager->CreateH1("nRadius", "Neutron Production vs. Radius", 150, 0, 500);
 
   analysisManager->CreateH2("nEnergyB10rotationD1", "Incoming Neutron Energy Spectrum on Boron-10 as a function of rotationAngle, Detector 1", 25, 0, 180, 100, 0.001, 1, "none", "none", "none", "none", "linear","log");
   analysisManager->CreateH2("nEnergyB10rotationD2", "Incoming Neutron Energy Spectrum on Boron-10 as a function of rotationAngle, Detector 2", 25, 0, 180, 100, 0.001, 1, "none", "none", "none", "none", "linear","log");
