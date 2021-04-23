@@ -146,16 +146,22 @@ DOWSER01PrimaryGeneratorAction::~DOWSER01PrimaryGeneratorAction()
 
 G4double RadialPDF(G4double x)
 {
-  return exp(-50*pow(x - 0.5, 2));
+  return exp(-10*pow(x - 0.5, 2));
   //return -pow(2 * x - 1, 2) + 1;
 }
 
-G4double GenerateNumFromPDF()
+G4double AxialPDF(G4double x)
+{
+  return exp(-20*pow(x - 0.5, 2));
+  //return -pow(2 * x - 1, 2) + 1;
+}
+
+G4double GenerateNumFromPDF(G4double (*PDF)(G4double))
 {
   while(true)
-  {
+  { 
     G4double num = G4UniformRand();
-    G4double prob = RadialPDF(num); 
+    G4double prob = PDF(num); 
     if (G4UniformRand() <= prob)
     {
       return num;
@@ -207,13 +213,13 @@ void DOWSER01PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   info->SetEnergyN(Eneutron);
   
   maxRadius = 300;
-  minRadius = 150;
+  minRadius = 10;
 
   //U = -pow((2*G4UniformRand() - 1), 2) + 1;
 
   //Sqrt present to correct for point clustering in disk point picking
   //for more detail: https://mathworld.wolfram.com/DiskPointPicking.html
-  R = maxRadius*sqrt(GenerateNumFromPDF() + pow((minRadius/maxRadius), 2));
+  R = maxRadius*sqrt(GenerateNumFromPDF(RadialPDF) + pow((minRadius/maxRadius), 2));
   Phi = 2 * pi * G4UniformRand();
   Z = 400 * (2*G4UniformRand()-1);
 
