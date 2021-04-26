@@ -146,22 +146,21 @@ DOWSER01PrimaryGeneratorAction::~DOWSER01PrimaryGeneratorAction()
 
 G4double RadialPDF(G4double x)
 {
-  return exp(-10*pow(x - 0.5, 2));
+  return exp(-30*pow(x - 0.5, 2));
   //return -pow(2 * x - 1, 2) + 1;
 }
 
 G4double AxialPDF(G4double x)
 {
-  return exp(-20*pow(x - 0.5, 2));
-  //return -pow(2 * x - 1, 2) + 1;
+  return exp(-10*pow(x - 0.5, 2));
 }
 
-G4double GenerateNumFromPDF(G4double (*PDF)(G4double))
+G4double GenerateNumFromPDF(G4double (*PDF)(G4double), G4double weight = 1)
 {
   while(true)
   { 
     G4double num = G4UniformRand();
-    G4double prob = PDF(num); 
+    G4double prob = PDF(num) * weight; 
     if (G4UniformRand() <= prob)
     {
       return num;
@@ -175,7 +174,7 @@ void DOWSER01PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   G4double Eneutron(0), x0(0), y0(0), z0(0), px0(0), py0(0), pz0(0), px1(0), pz1(0), rotationAngle(0), theta(0), phi(0), x1(0), y1(0), 
   z1(0), Al_z(0), Xe_z(0), sourceRadius(0), HDPE_z(0), spread(0), spread_angle(0);
   G4int copyNo(0), iflag(0);
-  G4double xx(0), yy(0), zz(0), pPhiH(0), pVerH(0), xDiff(0), yDiff(0), zDiff(0), R(0), Phi(0), Z(0), maxRadius(0), minRadius(0), U(0);
+  G4double xx(0), yy(0), zz(0), pPhiH(0), pVerH(0), xDiff(0), yDiff(0), zDiff(0), R(0), Phi(0), Z(0), maxRadius(0), minRadius(0), radialPick(0);
   // G4double xx(0), yy(0), zz(0), pPhiH(0), pVerH(0);
   // In order to avoid dependence of PrimaryGeneratorAction
   // on DetectorConstruction class we get world volume
@@ -215,15 +214,15 @@ void DOWSER01PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   maxRadius = 300;
   minRadius = 10;
 
-  //U = -pow((2*G4UniformRand() - 1), 2) + 1;
-
   //Sqrt present to correct for point clustering in disk point picking
   //for more detail: https://mathworld.wolfram.com/DiskPointPicking.html
-  R = maxRadius*sqrt(GenerateNumFromPDF(RadialPDF) + pow((minRadius/maxRadius), 2));
+  radialPick = GenerateNumFromPDF(RadialPDF);
+  R = maxRadius*sqrt(radialPick + pow((minRadius/maxRadius), 2));
   Phi = 2 * pi * G4UniformRand();
-  Z = 400 * (2*G4UniformRand()-1);
+  Z = 400 * GenerateNumFromPDF(AxialPDF, RadialPDF(radialPick));
 
   analysisManager->FillH1(16, R);
+  analysisManager->FillH2(4, R, Z);
 
   //Cylindrical coordinate representation of a Cylindrical surface following the wolfram website definition
   x1 = R * sin(Phi);
