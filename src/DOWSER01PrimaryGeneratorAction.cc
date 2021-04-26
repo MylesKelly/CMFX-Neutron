@@ -146,7 +146,7 @@ DOWSER01PrimaryGeneratorAction::~DOWSER01PrimaryGeneratorAction()
 
 G4double RadialPDF(G4double x)
 {
-  return exp(-30*pow(x - 0.5, 2));
+  return exp(-20*pow(x - 0.5, 2));
   //return -pow(2 * x - 1, 2) + 1;
 }
 
@@ -211,7 +211,7 @@ void DOWSER01PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   analysisManager->FillH1(1, std::log10(Eneutron));
   info->SetEnergyN(Eneutron);
   
-  maxRadius = 300;
+  maxRadius = 500;
   minRadius = 10;
 
   //Sqrt present to correct for point clustering in disk point picking
@@ -219,7 +219,7 @@ void DOWSER01PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   radialPick = GenerateNumFromPDF(RadialPDF);
   R = maxRadius*sqrt(radialPick + pow((minRadius/maxRadius), 2));
   Phi = 2 * pi * G4UniformRand();
-  Z = 400 * GenerateNumFromPDF(AxialPDF, RadialPDF(radialPick));
+  Z = 200 * (2*GenerateNumFromPDF(AxialPDF, RadialPDF(radialPick))-1);
 
   analysisManager->FillH1(16, R);
   analysisManager->FillH2(4, R, Z);

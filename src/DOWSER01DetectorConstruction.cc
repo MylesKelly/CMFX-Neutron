@@ -134,6 +134,8 @@ G4VPhysicalVolume* DOWSER01DetectorConstruction::Construct()
   // Al for substract, Aluminum
   G4Material* Aluminum = nistManager->FindOrBuildMaterial("G4_Al", fromIsotopes);
 
+  G4Material* Steel = nistManager->FindOrBuildMaterial("G4_STAINLESS-STEEL", fromIsotopes);
+
   /*
    // Vacuum
    new G4Material("Galactic", z=1., a=1.01*g/mole,density= universe_mean_density,
@@ -248,11 +250,17 @@ G4VPhysicalVolume* DOWSER01DetectorConstruction::Construct()
   G4double Det_y = HDPE_y1;
   G4double Det_z = 0.001*mm;
 
+  //Vaccum Vessel
+  G4double InnerRadius = (100-1.3)/2*cm;
+  G4double OuterRadius = 100/2*cm;
+  G4double length = 100*cm;
+
   //SOLIDS:
   G4VSolid* XenonSolid = new G4Box("XenonGas", Xenon_x/ 2, Xenon_y/2, Xenon_z/2);
   G4VSolid* AlSubstrateSolid = new G4Box("AlSubstrate", Al_x/ 2, Al_y/2, Al_z/2);
   G4VSolid* BoronFilmSolid = new G4Box("BoronFilm", Boron_x/ 2, Boron_y/2, Boron_z/2);
   G4VSolid* SiPMSolid = new G4Box("SiPM", SiPM_x/2, SiPM_y/2, SiPM_z/2);
+  G4VSolid* VVesselSolid = new G4Tubs("VVessel", InnerRadius, OuterRadius, length/2, 0, 2*pi);
 
   //G4VSolid* HDPESolid = new G4Box("HDPE", HDPE_x1/2, HDPE_y1/2, HDPE_z/2);
   G4VSolid* HDPESubtraction = new G4Box("HDPE_Sub", Sub_x/2, Sub_y/2, Sub_z/2);
@@ -284,7 +292,7 @@ G4VPhysicalVolume* DOWSER01DetectorConstruction::Construct()
   G4VSolid* detSlice = new G4Box("detSlice", Det_x/(nSlices), Det_y/2, Det_z);
   G4LogicalVolume* detSliceLogical = new G4LogicalVolume(detSlice, boron10, "detSlice");
 
-  
+  G4LogicalVolume* VVesselLogical = new G4LogicalVolume(VVesselSolid, Steel, "VVessel");  
 
   //Place volumes in the world:
   // new G4PVPlacement(0, G4ThreeVector(), XenonLogical, "XenonGas", World, false, 0);
@@ -309,6 +317,8 @@ G4VPhysicalVolume* DOWSER01DetectorConstruction::Construct()
   //G4VPhysicalVolume* Detector1Physical = new G4PVPlacement(rotMatMinus, G4ThreeVector(prism_l/2 + (Det_x/prism_h)*(Det_z), 0, 0), Detector1Logical, "Detector1", HDPELogical, false, 0);
   //G4VPhysicalVolume* Detector2Physical = new G4PVPlacement(rotMatPlus, G4ThreeVector(-(prism_l/2 + (Det_x/prism_h)*(Det_z)), 0, 0), Detector2Logical, "Detector2", HDPELogical, false, 0);
 
+  G4VPhysicalVolume* VVesselPhysical = new G4PVPlacement(0, G4ThreeVector(), VVesselLogical, "VVessel", World, false, 0);
+
   //
   // Visualization attributes
   //
@@ -329,6 +339,7 @@ G4VPhysicalVolume* DOWSER01DetectorConstruction::Construct()
   HDPELogical->SetVisAttributes (whiteBoxVisAtt);
   Detector1Logical->SetVisAttributes (redBoxVisAtt);
   Detector2Logical->SetVisAttributes (blueBoxVisAtt);
+  VVesselLogical->SetVisAttributes (whiteBoxVisAtt);
   // Cad1Logical->SetVisAttributes (blueBoxVisAtt);
   // Cad2Logical->SetVisAttributes (blueBoxVisAtt);
   //
