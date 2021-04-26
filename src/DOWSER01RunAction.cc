@@ -127,7 +127,7 @@ void DOWSER01RunAction::BeginOfRunAction(const G4Run* run)
   analysisManager->CreateH2("nEnergyB10rotationD1", "Incoming Neutron Energy Spectrum on Boron-10 as a function of rotationAngle, Detector 1", 25, 0, 180, 100, 0.001, 1, "none", "none", "none", "none", "linear","log");
   analysisManager->CreateH2("nEnergyB10rotationD2", "Incoming Neutron Energy Spectrum on Boron-10 as a function of rotationAngle, Detector 2", 25, 0, 180, 100, 0.001, 1, "none", "none", "none", "none", "linear","log");
   analysisManager->CreateH2("Li_xB10rotation", "Boron 10 Capture X position vs. Rotation Angle", 25, 0, 180, 50, 0, 200);
-  analysisManager->CreateH2("nDensityCrossSection", "Neutron Density Cross Section of Plasma", 50, 0, 300, 50, -200, 200);
+  analysisManager->CreateH2("nDensityCrossSection", "Neutron Density Cross Section of Plasma", 50, 0, 500, 50, -300, 300);
 
 
 }

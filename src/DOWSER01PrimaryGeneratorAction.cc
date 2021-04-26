@@ -219,7 +219,7 @@ void DOWSER01PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   radialPick = GenerateNumFromPDF(RadialPDF);
   R = maxRadius*sqrt(radialPick + pow((minRadius/maxRadius), 2));
   Phi = 2 * pi * G4UniformRand();
-  Z = 200 * (2*GenerateNumFromPDF(AxialPDF, RadialPDF(radialPick))-1);
+  Z = 300 * (2*GenerateNumFromPDF(AxialPDF, RadialPDF(radialPick))-1);
 
   analysisManager->FillH1(16, R);
   analysisManager->FillH2(4, R, Z);
