@@ -266,9 +266,6 @@ G4VPhysicalVolume* DOWSER01DetectorConstruction::Construct()
   G4VSolid* VVesselSolid = new G4Tubs("VVessel", InnerRadius, OuterRadius, length/2, 0, 2*pi);
   G4VSolid* CConductorSolid = new G4Tubs("CConductor", 0, conductorRadius, length/2, 0, 2*pi);
 
-  //G4VSolid* HDPESolid = new G4Box("HDPE", HDPE_x1/2, HDPE_y1/2, HDPE_z/2);
-  G4VSolid* HDPESubtraction = new G4Box("HDPE_Sub", Sub_x/2, Sub_y/2, Sub_z/2);
-
   G4RotationMatrix* rotMatPlus = new G4RotationMatrix();
   rotMatPlus->rotateY(-atan(prism_l/prism_h) - pi/2);
 
