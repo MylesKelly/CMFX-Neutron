@@ -234,7 +234,7 @@ G4VPhysicalVolume* DOWSER01DetectorConstruction::Construct()
   G4double prism_l = (150/2)*mm;
 
   //HDPE Attachment:
-  G4double HDPE_x = 50*mm;
+  G4double HDPE_x = 25*mm;
   G4double HDPE_y = 124*mm;
   G4double HDPE_z = 124*mm;
 
@@ -256,6 +256,11 @@ G4VPhysicalVolume* DOWSER01DetectorConstruction::Construct()
   //Central Conductor
   G4double conductorRadius = 5*cm;
 
+  //HDPE Ring
+  G4double HDPE_InnerRadius = OuterRadius + 5*cm;
+  G4double HDPE_OuterRadius = HDPE_InnerRadius + 5*cm;
+  G4double HDPE_length = length/2;
+
   //SOLIDS:
   G4VSolid* XenonSolid = new G4Box("XenonGas", Xenon_x/ 2, Xenon_y/2, Xenon_z/2);
   G4VSolid* AlSubstrateSolid = new G4Box("AlSubstrate", Al_x/ 2, Al_y/2, Al_z/2);
@@ -263,6 +268,7 @@ G4VPhysicalVolume* DOWSER01DetectorConstruction::Construct()
   G4VSolid* SiPMSolid = new G4Box("SiPM", SiPM_x/2, SiPM_y/2, SiPM_z/2);
   G4VSolid* VVesselSolid = new G4Tubs("VVessel", InnerRadius, OuterRadius, length/2, 0, 2*pi);
   G4VSolid* CConductorSolid = new G4Tubs("CConductor", 0, conductorRadius, length/2, 0, 2*pi);
+  G4VSolid* HDPERing = new G4Tubs("HDPERing", HDPE_InnerRadius, HDPE_OuterRadius, HDPE_length/2, 0, pi/2);
 
   G4RotationMatrix* rotMatPlus = new G4RotationMatrix();
   rotMatPlus->rotateY(-atan(prism_l/prism_h) - pi/2);
@@ -271,7 +277,7 @@ G4VPhysicalVolume* DOWSER01DetectorConstruction::Construct()
   rotMatMinus->rotateY(atan(prism_l/prism_h) + pi/2);
 
   //G4VSolid* Attachment = new G4SubtractionSolid("Attachment", HDPESolid, HDPESubtraction, rotMat, G4ThreeVector(0, 0, HDPE_z/2));
-  G4VSolid* HDPESolid = new G4Box("HDPE", HDPE_x/2, HDPE_y/2, HDPE_z/2);
+  G4VSolid* HDPESolid = new G4Box("HDPESolid", HDPE_x/2, HDPE_y/2, HDPE_z/2);
 
   G4VSolid* Detector = new G4Box("Detector", Det_x/2, Det_y/2, Det_z/2);
 
@@ -288,13 +294,17 @@ G4VPhysicalVolume* DOWSER01DetectorConstruction::Construct()
   G4LogicalVolume* VVesselLogical = new G4LogicalVolume(VVesselSolid, Steel, "VVessel");  
   G4LogicalVolume* CConductorLogical = new G4LogicalVolume(CConductorSolid, Steel, "CConductor");  
 
+  G4LogicalVolume* HDPERingLogical = new G4LogicalVolume(HDPERing, polyethylene, "HDPERing");
+
+
   //Place volumes in the world:
 
-  G4VPhysicalVolume* HDPEPhysical = new G4PVPlacement(0, G4ThreeVector(0.505*m + HDPE_x/2, 0, 0), HDPELogical, "HDPE", World, false, 0);
+  //G4VPhysicalVolume* HDPEPhysical = new G4PVPlacement(0, G4ThreeVector(0.505*m + HDPE_x/2, 0, 0), HDPELogical, "HDPE", World, false, 0);
   G4VPhysicalVolume* DetectorPhysical = new G4PVPlacement(0, G4ThreeVector(HDPE_x/2 + Det_x/2, 0, 0), DetectorLogical, "Detector", HDPELogical, false, 0);
 
   G4VPhysicalVolume* VVesselPhysical = new G4PVPlacement(0, G4ThreeVector(), VVesselLogical, "VVessel", World, false, 0);
-  //G4VPhysicalVolume* CConductorPhysical = new G4PVPlacement(0, G4ThreeVector(), CConductorLogical, "CConductor", World, false, 0);
+  
+  G4VPhysicalVolume* HDPERingPhysical = new G4PVPlacement(0, G4ThreeVector(), HDPERingLogical, "HDPERing", World, false, 0);
 
   //
   // Visualization attributes
@@ -317,6 +327,7 @@ G4VPhysicalVolume* DOWSER01DetectorConstruction::Construct()
   DetectorLogical->SetVisAttributes (redBoxVisAtt);
   VVesselLogical->SetVisAttributes (whiteBoxVisAtt);
   CConductorLogical->SetVisAttributes (whiteBoxVisAtt);
+  HDPERingLogical->SetVisAttributes (whiteBoxVisAtt);
   // Cad1Logical->SetVisAttributes (blueBoxVisAtt);
   // Cad2Logical->SetVisAttributes (blueBoxVisAtt);
   //
