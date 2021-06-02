@@ -261,6 +261,11 @@ G4VPhysicalVolume* DOWSER01DetectorConstruction::Construct()
   G4double HDPE_OuterRadius = HDPE_InnerRadius + 5*cm;
   G4double HDPE_length = length/2;
 
+  //Detector Tube:
+  G4double Det_InnerRadius = HDPE_OuterRadius;
+  G4double Det_OuterRadius = Det_InnerRadius + 0.001*mm;
+  G4double Det_length = HDPE_length;
+
   //SOLIDS:
   G4VSolid* XenonSolid = new G4Box("XenonGas", Xenon_x/ 2, Xenon_y/2, Xenon_z/2);
   G4VSolid* AlSubstrateSolid = new G4Box("AlSubstrate", Al_x/ 2, Al_y/2, Al_z/2);
@@ -279,7 +284,7 @@ G4VPhysicalVolume* DOWSER01DetectorConstruction::Construct()
   //G4VSolid* Attachment = new G4SubtractionSolid("Attachment", HDPESolid, HDPESubtraction, rotMat, G4ThreeVector(0, 0, HDPE_z/2));
   G4VSolid* HDPESolid = new G4Box("HDPESolid", HDPE_x/2, HDPE_y/2, HDPE_z/2);
 
-  G4VSolid* Detector = new G4Box("Detector", Det_x/2, Det_y/2, Det_z/2);
+  G4VSolid* Detector = new G4Tubs("Detector", Det_InnerRadius, Det_OuterRadius, Det_length/2, 0, pi/2);
 
   //LOGICAL VOLUMES:
   G4LogicalVolume* XenonLogical = new G4LogicalVolume(XenonSolid, Xenon, "XenonGas");
@@ -300,7 +305,7 @@ G4VPhysicalVolume* DOWSER01DetectorConstruction::Construct()
   //Place volumes in the world:
 
   //G4VPhysicalVolume* HDPEPhysical = new G4PVPlacement(0, G4ThreeVector(0.505*m + HDPE_x/2, 0, 0), HDPELogical, "HDPE", World, false, 0);
-  G4VPhysicalVolume* DetectorPhysical = new G4PVPlacement(0, G4ThreeVector(HDPE_x/2 + Det_x/2, 0, 0), DetectorLogical, "Detector", HDPELogical, false, 0);
+  G4VPhysicalVolume* DetectorPhysical = new G4PVPlacement(0, G4ThreeVector(0, 0, 0), DetectorLogical, "Detector", World, false, 0);
 
   G4VPhysicalVolume* VVesselPhysical = new G4PVPlacement(0, G4ThreeVector(), VVesselLogical, "VVessel", World, false, 0);
   
