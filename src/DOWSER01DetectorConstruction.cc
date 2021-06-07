@@ -227,7 +227,7 @@ G4VPhysicalVolume* DOWSER01DetectorConstruction::Construct()
 
   //Prism Parameters
   //The height of the isosceles triangle cross section:
-  G4double prism_h = 200*mm;
+  G4double prism_h = 175*mm;
   //1/2 of the base of the trangle cross section:
   G4double prism_l = (150/2)*mm;
 
