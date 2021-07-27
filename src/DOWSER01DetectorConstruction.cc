@@ -217,11 +217,6 @@ G4VPhysicalVolume* DOWSER01DetectorConstruction::Construct()
   G4double Al_y = 100 *mm;
   G4double Al_z = 0.8 *mm;
 
-  //Boron-10 Film:
-  G4double Boron_x = 100 *mm;
-  G4double Boron_y = 100 *mm;
-  G4double Boron_z = 0.001 *mm;
-
   //SiPM:
   G4double SiPM_x = 3*mm; 
   G4double SiPM_y = 1*mm; 
@@ -234,7 +229,7 @@ G4VPhysicalVolume* DOWSER01DetectorConstruction::Construct()
   G4double prism_l = (150/2)*mm;
 
   //HDPE Attachment:
-  G4double HDPE_x = 25*mm;
+  G4double HDPE_x = 75*mm;
   G4double HDPE_y = 124*mm;
   G4double HDPE_z = 124*mm;
 
@@ -247,6 +242,11 @@ G4VPhysicalVolume* DOWSER01DetectorConstruction::Construct()
   G4double Det_x = 0.001*mm;
   G4double Det_y = HDPE_y;
   G4double Det_z = HDPE_z;
+
+  //Boron-10 Film:
+  G4double Boron_x = 0.001 *mm;
+  G4double Boron_y = HDPE_y;
+  G4double Boron_z = HDPE_z;
 
   //Vaccum Vessel
   G4double InnerRadius = (100-1.3)/2*cm;
@@ -273,7 +273,7 @@ G4VPhysicalVolume* DOWSER01DetectorConstruction::Construct()
   G4VSolid* SiPMSolid = new G4Box("SiPM", SiPM_x/2, SiPM_y/2, SiPM_z/2);
   G4VSolid* VVesselSolid = new G4Tubs("VVessel", InnerRadius, OuterRadius, length/2, 0, 2*pi);
   G4VSolid* CConductorSolid = new G4Tubs("CConductor", 0, conductorRadius, length/2, 0, 2*pi);
-  G4VSolid* HDPERing = new G4Tubs("HDPERing", HDPE_InnerRadius, HDPE_OuterRadius, HDPE_length/2, 0, pi/2);
+  //G4VSolid* HDPERing = new G4Tubs("HDPERing", HDPE_InnerRadius, HDPE_OuterRadius, HDPE_length/2, 0, pi/2);
 
   G4RotationMatrix* rotMatPlus = new G4RotationMatrix();
   rotMatPlus->rotateY(-atan(prism_l/prism_h) - pi/2);
@@ -284,7 +284,7 @@ G4VPhysicalVolume* DOWSER01DetectorConstruction::Construct()
   //G4VSolid* Attachment = new G4SubtractionSolid("Attachment", HDPESolid, HDPESubtraction, rotMat, G4ThreeVector(0, 0, HDPE_z/2));
   G4VSolid* HDPESolid = new G4Box("HDPESolid", HDPE_x/2, HDPE_y/2, HDPE_z/2);
 
-  G4VSolid* Detector = new G4Tubs("Detector", Det_InnerRadius, Det_OuterRadius, Det_length/2, 0, pi/2);
+  //G4VSolid* Detector = new G4Tubs("Detector", Det_InnerRadius, Det_OuterRadius, Det_length/2, 0, pi/2);
 
   //LOGICAL VOLUMES:
   G4LogicalVolume* XenonLogical = new G4LogicalVolume(XenonSolid, Xenon, "XenonGas");
@@ -294,22 +294,30 @@ G4VPhysicalVolume* DOWSER01DetectorConstruction::Construct()
 
   G4LogicalVolume* HDPELogical = new G4LogicalVolume(HDPESolid, polyethylene, "HDPE");
 
-  G4LogicalVolume* DetectorLogical = new G4LogicalVolume(Detector, boron10, "Detector");
+  //G4LogicalVolume* DetectorLogical = new G4LogicalVolume(Detector, boron10, "Detector");
 
   G4LogicalVolume* VVesselLogical = new G4LogicalVolume(VVesselSolid, Steel, "VVessel");  
   G4LogicalVolume* CConductorLogical = new G4LogicalVolume(CConductorSolid, Steel, "CConductor");  
 
-  G4LogicalVolume* HDPERingLogical = new G4LogicalVolume(HDPERing, polyethylene, "HDPERing");
+  //G4LogicalVolume* HDPERingLogical = new G4LogicalVolume(HDPERing, polyethylene, "HDPERing");
 
 
   //Place volumes in the world:
 
-  //G4VPhysicalVolume* HDPEPhysical = new G4PVPlacement(0, G4ThreeVector(0.505*m + HDPE_x/2, 0, 0), HDPELogical, "HDPE", World, false, 0);
-  G4VPhysicalVolume* DetectorPhysical = new G4PVPlacement(0, G4ThreeVector(0, 0, 0), DetectorLogical, "Detector", World, false, 0);
+  G4VPhysicalVolume* HDPEPhysical = new G4PVPlacement(0, G4ThreeVector(0.505*m + HDPE_x/2, 0, 0), HDPELogical, "HDPE", World, false, 0);
+  G4VPhysicalVolume* Detector1Physical = new G4PVPlacement(0, G4ThreeVector(HDPE_x/2 + Boron_x/2, 0, 0), BoronFilmLogical, "Film 1", HDPELogical, false, 0);
+  //G4VPhysicalVolume* Detector2Physical = new G4PVPlacement(0, G4ThreeVector(0.505*m + HDPE_x + Boron_x/2 + 3*mm, 0, 0), BoronFilmLogical, "Film 2", World, false, 1);
+  //G4VPhysicalVolume* Detector3Physical = new G4PVPlacement(0, G4ThreeVector(0.505*m + HDPE_x + Boron_x/2 + 6*mm, 0, 0), BoronFilmLogical, "Film 3", World, false, 2);
+  //G4VPhysicalVolume* Detector4Physical = new G4PVPlacement(0, G4ThreeVector(0.505*m + HDPE_x + Boron_x/2 + 9*mm, 0, 0), BoronFilmLogical, "Film 4", World, false, 3);
+  //G4VPhysicalVolume* Detector5Physical = new G4PVPlacement(0, G4ThreeVector(0.505*m + HDPE_x + Boron_x/2 + 12*mm, 0, 0), BoronFilmLogical, "Film 5", World, false, 4);
+  //G4VPhysicalVolume* Detector6Physical = new G4PVPlacement(0, G4ThreeVector(0.505*m + HDPE_x + Boron_x/2 + 15*mm, 0, 0), BoronFilmLogical, "Film 6", World, false, 5);
+  //G4VPhysicalVolume* Detector7Physical = new G4PVPlacement(0, G4ThreeVector(0.505*m + HDPE_x + Boron_x/2 + 18*mm, 0, 0), BoronFilmLogical, "Film 7", World, false, 6);
+  //G4VPhysicalVolume* Detector8Physical = new G4PVPlacement(0, G4ThreeVector(0.505*m + HDPE_x + Boron_x/2 + 21*mm, 0, 0), BoronFilmLogical, "Film 8", World, false, 7);
+  //G4VPhysicalVolume* DetectorPhysical = new G4PVPlacement(0, G4ThreeVector(0, 0, 0), DetectorLogical, "Detector", World, false, 0);
 
   G4VPhysicalVolume* VVesselPhysical = new G4PVPlacement(0, G4ThreeVector(), VVesselLogical, "VVessel", World, false, 0);
   
-  G4VPhysicalVolume* HDPERingPhysical = new G4PVPlacement(0, G4ThreeVector(), HDPERingLogical, "HDPERing", World, false, 0);
+  //G4VPhysicalVolume* HDPERingPhysical = new G4PVPlacement(0, G4ThreeVector(), HDPERingLogical, "HDPERing", World, false, 0);
 
   //
   // Visualization attributes
@@ -329,10 +337,10 @@ G4VPhysicalVolume* DOWSER01DetectorConstruction::Construct()
   XenonLogical->SetVisAttributes (greenBoxVisAtt);
   SiPMLogical->SetVisAttributes (yellowBoxVisAtt);
   HDPELogical->SetVisAttributes (whiteBoxVisAtt);
-  DetectorLogical->SetVisAttributes (redBoxVisAtt);
+  //DetectorLogical->SetVisAttributes (redBoxVisAtt);
   VVesselLogical->SetVisAttributes (whiteBoxVisAtt);
   CConductorLogical->SetVisAttributes (whiteBoxVisAtt);
-  HDPERingLogical->SetVisAttributes (whiteBoxVisAtt);
+  //HDPERingLogical->SetVisAttributes (whiteBoxVisAtt);
   // Cad1Logical->SetVisAttributes (blueBoxVisAtt);
   // Cad2Logical->SetVisAttributes (blueBoxVisAtt);
   //
