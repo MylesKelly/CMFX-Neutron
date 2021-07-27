@@ -100,14 +100,14 @@ G4VPhysicalVolume* DOWSER01DetectorConstruction::Construct()
   // nistManager->FindOrBuildMaterial("G4_Pb", fromIsotopes);
   nistManager->FindOrBuildMaterial("G4_Galactic", fromIsotopes);
   G4Material* vacuum  = G4Material::GetMaterial("G4_Galactic");
-  
+
   // nistManager->FindOrBuildMaterial("G4_B", fromIsotopes);
   // G4Material* boron10 = G4Material::GetMaterial("G4_B");
   // density = 1.0 *g/cm3;
   // a = 10.01294*g/mole;
   // G4Material* boron10 = new G4Material("boron10", 5., 10.01294*g/mole, 1.0*g/cm3);
   // nistManager->FindOrBuildMaterial("boron10", fromIsotopes);
-  
+
   G4int protons = 5, neutrons = 5, nucleons=protons+neutrons, isotopes, ncomponents;
   G4double atomicMass = 10.01294*g/mole;
   G4Isotope* isoB10 = new G4Isotope("isoB10", protons, nucleons, atomicMass);
@@ -115,7 +115,7 @@ G4VPhysicalVolume* DOWSER01DetectorConstruction::Construct()
   elmB10->AddIsotope(isoB10,100*perCent);
   G4Material* boron10 = new G4Material("boron10", 2.34*g/cm3, ncomponents=1, kStateSolid);
   boron10->AddElement(elmB10,100*perCent);
-  
+
   //Define Xenon gas explicitly to allow for variable pressure:
   G4Isotope* isoXe = new G4Isotope("isoXe131", 54, 131, 130.905*g/mole);
   G4Element* elmXe = new G4Element("elmXe", "XeGas", 1);
@@ -150,7 +150,7 @@ G4VPhysicalVolume* DOWSER01DetectorConstruction::Construct()
   G4Element* Cd113 = new G4Element("Cadmium113",symbol="Cd113", z= 48., a =112.904*g/mole);
   G4Material* cadmium113 = new G4Material("Cadmium113", density=8.7*g/cm3, ncomponents=1, kStateSolid);
   cadmium113->AddElement(Cd113, 1);
-  
+
   // BC545 Materials
   // Natural Boron-loaded Premium Plastic Scintillator
   // 5% Boronncomponents=
@@ -163,38 +163,38 @@ G4VPhysicalVolume* DOWSER01DetectorConstruction::Construct()
   BC545->AddElement(C, fractionmass = 0.9018);
   BC545->AddElement(H, fractionmass = 0.0887);
   BC545->AddElement(B10, fractionmass = 0.0095);
-  
+
   nistManager->FindOrBuildMaterial("G4_BGO", fromIsotopes);
   G4Material* BGO  = G4Material::GetMaterial("G4_BGO");
-  
+
   // Boron Cabride
   // B4C
   G4int natoms;
   G4Material* B4C = new G4Material("B4C", density = 2.52*g/cm3, ncomponents = 2, kStateSolid);
   B4C->AddElement(C, natoms = 1);
   B4C->AddElement(B10, natoms = 4);
-  
+
   // Print materials
   G4cout << G4endl << "The materials defined are: " << G4endl << G4endl;
   G4cout << *(G4Material::GetMaterialTable()) << G4endl;
   G4cout << "************  end of material table  ************" << G4endl;
-  
+
   //============================================================================
   //      Definitions of Solids, Logical Volumes, Physical Volumes
   //============================================================================
-  
+
   //-------------
   // World Volume
   //-------------
   G4RotationMatrix* rot = new G4RotationMatrix();
   rot->rotateZ(0.*deg);
-  
+
   G4ThreeVector worldSize = G4ThreeVector(150*cm, 150*cm, 150*cm);
   G4Box * solidWorld
   = new G4Box("soildWorld", worldSize.x()/2., worldSize.y()/2., worldSize.z()/2.);
   G4LogicalVolume * World
   = new G4LogicalVolume(solidWorld, vacuum, "World", 0, 0, 0);
-  
+
   //
   //  Must place the World Physical volume unrotated at (0,0,0).
   G4VPhysicalVolume * worldPV
@@ -218,8 +218,8 @@ G4VPhysicalVolume* DOWSER01DetectorConstruction::Construct()
   G4double Al_z = 0.8 *mm;
 
   //SiPM:
-  G4double SiPM_x = 3*mm; 
-  G4double SiPM_y = 1*mm; 
+  G4double SiPM_x = 3*mm;
+  G4double SiPM_y = 1*mm;
   G4double SiPM_z = 3*mm;
 
   //Prism Parameters
@@ -244,7 +244,7 @@ G4VPhysicalVolume* DOWSER01DetectorConstruction::Construct()
   G4double Det_z = HDPE_z;
 
   //Boron-10 Film:
-  G4double Boron_x = 0.001 *mm;
+  G4double Boron_x = 0.002 *mm;
   G4double Boron_y = HDPE_y;
   G4double Boron_z = HDPE_z;
 
@@ -296,8 +296,8 @@ G4VPhysicalVolume* DOWSER01DetectorConstruction::Construct()
 
   //G4LogicalVolume* DetectorLogical = new G4LogicalVolume(Detector, boron10, "Detector");
 
-  G4LogicalVolume* VVesselLogical = new G4LogicalVolume(VVesselSolid, Steel, "VVessel");  
-  G4LogicalVolume* CConductorLogical = new G4LogicalVolume(CConductorSolid, Steel, "CConductor");  
+  G4LogicalVolume* VVesselLogical = new G4LogicalVolume(VVesselSolid, Steel, "VVessel");
+  G4LogicalVolume* CConductorLogical = new G4LogicalVolume(CConductorSolid, Steel, "CConductor");
 
   //G4LogicalVolume* HDPERingLogical = new G4LogicalVolume(HDPERing, polyethylene, "HDPERing");
 
@@ -316,7 +316,7 @@ G4VPhysicalVolume* DOWSER01DetectorConstruction::Construct()
   //G4VPhysicalVolume* DetectorPhysical = new G4PVPlacement(0, G4ThreeVector(0, 0, 0), DetectorLogical, "Detector", World, false, 0);
 
   G4VPhysicalVolume* VVesselPhysical = new G4PVPlacement(0, G4ThreeVector(), VVesselLogical, "VVessel", World, false, 0);
-  
+
   //G4VPhysicalVolume* HDPERingPhysical = new G4PVPlacement(0, G4ThreeVector(), HDPERingLogical, "HDPERing", World, false, 0);
 
   //
@@ -350,4 +350,3 @@ G4VPhysicalVolume* DOWSER01DetectorConstruction::Construct()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
