@@ -51,16 +51,16 @@ DOWSER01PrimaryGeneratorAction::DOWSER01PrimaryGeneratorAction()
 : G4VUserPrimaryGeneratorAction(),
 fParticleGun(0)
 {
+  //Instantiate particle gun object:
   G4int nofParticles = 1;
   fParticleGun = new G4ParticleGun(nofParticles);
 
+  //Useful value for later:
   pi = 3.14159265358979323846264338328;
 
+  //Specify type of particle to be launched from the gun:
   G4ParticleDefinition* particleDefinition = G4ParticleTable::GetParticleTable()->FindParticle("neutron");
   fParticleGun->SetParticleDefinition(particleDefinition);
-  fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0.,0.,1.));
-  fParticleGun->SetParticleEnergy(0.001032720*eV);
-
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -72,17 +72,22 @@ DOWSER01PrimaryGeneratorAction::~DOWSER01PrimaryGeneratorAction()
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+//Custom function of anayltically specifying the radial probability distribution for generating neutrons
+//Specifies a simple gaussian
 G4double RadialPDF(G4double x)
 {
   return exp(-20*pow(x - 0.5, 2));
-  //return -pow(2 * x - 1, 2) + 1;
 }
 
+//Custom function of anayltically specifying the axial probability distribution for generating neutrons:
 G4double AxialPDF(G4double x)
 {
   return exp(-10*pow(x - 0.5, 2));
 }
 
+//Custom function which randomly generates a value from a provided probability function (one of the two above)
+//This turns the uniform random distribution function provided by GEANT, and uses it to create a distribution from a 
+//Specified function
 G4double GenerateNumFromPDF(G4double (*PDF)(G4double), G4double weight = 1)
 {
   while(true)
@@ -99,6 +104,7 @@ G4double GenerateNumFromPDF(G4double (*PDF)(G4double), G4double weight = 1)
 void DOWSER01PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
   // This function is called at the begining of event
+  // Initializing empty variables:
   G4double Eneutron(0), x0(0), y0(0), z0(0), px0(0), py0(0), pz0(0), px1(0), pz1(0), rotationAngle(0), theta(0), phi(0), x1(0), y1(0), 
   z1(0), Al_z(0), Xe_z(0), sourceRadius(0), HDPE_z(0), spread(0), spread_angle(0);
   G4int copyNo(0), iflag(0);
@@ -108,18 +114,7 @@ void DOWSER01PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   // on DetectorConstruction class we get world volume
   // from G4LogicalVolumeStore
   //
-  G4double worldZHalfLength = 0;
-  G4LogicalVolume* worlLV = G4LogicalVolumeStore::GetInstance()->GetVolume("World");
-  G4Box* worldBox = 0;
-  if ( worlLV) worldBox = dynamic_cast< G4Box*>(worlLV->GetSolid());
-  if ( worldBox ) {
-    worldZHalfLength = worldBox->GetZHalfLength();
-  }
-  else  {
-    G4cerr << "World volume of box not found." << G4endl;
-    G4cerr << "Perhaps you have changed geometry." << G4endl;
-    G4cerr << "The gun will be place in the center." << G4endl;
-  }
+
   
   // begining of particle iteration - energy, position, angle assessment
   
