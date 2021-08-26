@@ -78,25 +78,25 @@ DOWSER01SteppingAction::~DOWSER01SteppingAction()
 
 void DOWSER01SteppingAction::UserSteppingAction(const G4Step* step)
 {
-    
-    // get volume of the current step
-    G4int fStepNo;
-    G4LogicalVolume* volume = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume()->GetLogicalVolume();
-    fParticleName = step->GetTrack()->GetDefinition()->GetParticleName();
-    // G4double edep = step->GetTotalEnergyDeposit();
-    fStepNo = step->GetTrack()->GetCurrentStepNumber();
-    G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
-    // G4CsvAnalysisManager* analysisManager = G4CsvAnalysisManager::Instance();
+  // Get name of logical volume this step is in
+  G4LogicalVolume* volume = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume()->GetLogicalVolume();
+  G4String nameLogicVolume = volume->GetName();
 
-    //Getting name of the logical volume the step moves through
-    G4String nameLogicVolume = volume->GetName();
+  //Name of particle execxuting this step:
+  fParticleName = step->GetTrack()->GetDefinition()->GetParticleName();
+
+  //Get the number of the current step:
+  G4int fStepNo = step->GetTrack()->GetCurrentStepNumber();
     
+  //Get reference to analysisManger object so data can be stored in histograms:
+  G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
 
   if (fStepNo == 1)
   {
     G4EventManager* evtMan = G4EventManager::GetEventManager();
     DOWSER01EventInformation* info = (DOWSER01EventInformation*)evtMan->GetConstCurrentEvent()->GetUserInformation();
     if (info==0){G4cout<<"Warning: No Event information recorded!"<<G4endl;}
+    
     else {
       theta0 = info->GetTheta0();
       nEnergy = info->GetEnergyN();
@@ -109,24 +109,21 @@ void DOWSER01SteppingAction::UserSteppingAction(const G4Step* step)
 
     if (fParticleName == "Li7")
     {
+      //Incremet Boron-10 capture counter when Li-7 ion is produced
       numOfCapture += 1;
       G4cout << "New B-10 capture event, total is: " << numOfCapture << G4endl;
-
-      theta0 = info->GetTheta0();
-      phi = info->GetTheta1();
-      analysisManager->FillH1(3, theta0 - 90);
-      analysisManager->FillH1(4, phi);
     }
   } 
 
   if (nameLogicVolume == "Detector" && fParticleName == "neutron")
   {
+    //Get particle energy as it enters the Boron-10 thin film:
     G4double stepEnergy = step->GetPostStepPoint()->GetKineticEnergy()/CLHEP::eV;
 
+    //If Energy is not zero, store it in a histogram:
     if (stepEnergy != 0)
     {
         analysisManager->FillH1(2, stepEnergy);
-        analysisManager->FillH2(1, theta0-90, stepEnergy);
     }
   }
 }

@@ -123,10 +123,6 @@ void DOWSER01PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   //Set neutron energy
   Eneutron = 2.45;
   fParticleGun->SetParticleEnergy(Eneutron*MeV);
-
-  //Log N
-  analysisManager->FillH1(1, std::log10(Eneutron));
-  info->SetEnergyN(Eneutron);
   
   //Specify min/max radius for the toroidal neutron source geometry
   maxRadius = 500;
