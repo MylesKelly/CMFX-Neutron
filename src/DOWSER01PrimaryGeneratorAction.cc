@@ -109,19 +109,12 @@ void DOWSER01PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   z1(0), Al_z(0), Xe_z(0), sourceRadius(0), HDPE_z(0), spread(0), spread_angle(0);
   G4int copyNo(0), iflag(0);
   G4double xx(0), yy(0), zz(0), pPhiH(0), pVerH(0), xDiff(0), yDiff(0), zDiff(0), R(0), Phi(0), Z(0), maxRadius(0), minRadius(0), radialPick(0);
-  // G4double xx(0), yy(0), zz(0), pPhiH(0), pVerH(0);
-  // In order to avoid dependence of PrimaryGeneratorAction
-  // on DetectorConstruction class we get world volume
-  // from G4LogicalVolumeStore
-  //
 
-  
   // begining of particle iteration - energy, position, angle assessment
   
   // NEW - SET EVENT INFORMATION
   // Required files:
   // DOWSER01EventInformation.hh
-  
   DOWSER01EventInformation* info = new DOWSER01EventInformation();
   G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
   
@@ -129,11 +122,13 @@ void DOWSER01PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   
   //Set neutron energy
   Eneutron = 2.45;
-  
   fParticleGun->SetParticleEnergy(Eneutron*MeV);
+
+  //Log N
   analysisManager->FillH1(1, std::log10(Eneutron));
   info->SetEnergyN(Eneutron);
   
+  //Specify min/max radius for the toroidal neutron source geometry
   maxRadius = 500;
   minRadius = 10;
 
@@ -144,6 +139,7 @@ void DOWSER01PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   Phi = 2 * pi * G4UniformRand();
   Z = 300 * (2*GenerateNumFromPDF(AxialPDF, RadialPDF(radialPick))-1);
 
+  //Fill histograms with information about where neutrons are being generated in the simulation:
   analysisManager->FillH1(16, R);
   analysisManager->FillH2(4, R, Z);
 
@@ -152,16 +148,18 @@ void DOWSER01PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   y1 = R * cos(Phi);
   z1 = Z;
 
-  //generate cartesian coordinates for momentum
+  //generate cartesian coordinates for momentum, uniformly in all directions
   px0 = 1 - 2*G4UniformRand();
   py0 = 1 - 2*G4UniformRand(); 
   pz0 = 1 - 2*G4UniformRand(); 
 
+  //Pass computed parameters like origin position, momentum vector to fParticleGun object:
   fParticleGun->SetParticlePosition(G4ThreeVector(x1, y1, z1));
   fParticleGun->SetParticleMomentumDirection(G4ThreeVector(px0,py0,pz0));
+
   info->SetTheta0(rotationAngle*180.0/pi);
   info->SetTheta1(phi*180.0/pi);
-  //analysisManager->FillH1(2, rotationAngle*180.0/pi);
+
   fParticleGun->GeneratePrimaryVertex(anEvent);
   anEvent->SetUserInformation(info);
 }
