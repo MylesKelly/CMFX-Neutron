@@ -53,82 +53,10 @@ fParticleGun(0)
 {
   G4int nofParticles = 1;
   fParticleGun = new G4ParticleGun(nofParticles);
-  // nAngle = 0.;
-  G4double Emax = 6; // 1 MeV;
-  G4double Emin = -0.39794; // 0.4 eV;
-  G4double nEnergyT(0);
-  fnArray = 1295;
-  fAngleArray = 180;
-  G4double fEnergyT = 0;
+
   pi = 3.14159265358979323846264338328;
-  // Moon radius: 1737 km, LRO altitude: orbitH km
-  orbitH = 50.0; // ground (km)
-  moonR = 1737.0;
-  RoverRH = (moonR/(moonR + orbitH));
-  // vLRO = sqrt(G * moon_Mass /((orbitH+1737)*1000)); // LEO velocity in Y direction
-  vLRO = sqrt(4902808346033.4/((orbitH+moonR)*1000)); //
-  nEqvEnergy = 0.5*nMass*vLRO*vLRO/1.6022E-19; // eV
-  // neutron potential difference
-  // del U = G * n_Mass * moon_Mass * (1 / R_moon - 1 / (R_moon + H))
-  nPotDiff = 51252.715*(1./1737000 - 1./(1737000 + orbitH*1000)); // potential difference: U_orbit - U_surf
-  nMass = 1.6749E-27; // kg
-  moonMass = 7.34767309E+22; // kg
-  thetaCr = asin(RoverRH);
-  // nMC2 = nMass * 299790000.0 * 299790000.0; // joule
-  
-  std::ifstream theData("LNeutronIntSpectrum.DAT", std::ios::in);
-  G4cout << "Open Neutron Spectrum Data " << G4endl;
-  
-  if(!theData)
-  {
-    theData.close();
-    G4cout << "LNeutronIntSpectrum.DAT does not exit! " << G4endl;
-    G4double dElog10 = (Emax - Emin)/fnArray;
-    for (G4int copyNo=0; copyNo<fnArray; copyNo++)
-    {
-      nEnergy[copyNo]=pow(10,Emin + copyNo * dElog10);
-      intSpectrum[copyNo] = pow(nEnergy[copyNo],-0.89)
-      *(pow(10,Emin + (copyNo+0.5) * dElog10)-pow(10,Emin + (copyNo-0.5) * dElog10));
-      nEnergyT += intSpectrum[copyNo];
-      intSpectrum[copyNo] = nEnergyT;
-    }
-    intSpectrum[0] = 0;
-    for (G4int copyNo=0; copyNo<fnArray; copyNo++)
-    {
-      intSpectrum[copyNo] /=  nEnergyT;
-    }
-    
-  } else
-  {
-    for (G4int copyNo=0; copyNo<fnArray; copyNo++)
-    {
-      if (!theData.eof())
-      {
-        theData >> nEnergy[copyNo] >> intSpectrum[copyNo]  ;
-      }
-    }
-  }
-  theData.close();
-  
-  // Lunar neutron angular distribution, LEND's View
-  fEnergyT = 0;
-  for (G4int copyNo = 0; copyNo < fAngleArray; copyNo++)
-  {
-    // nFluxHEE[copyNo] = cos(0.5*copyNo*pi/fAngleArray)*std::sqrt(cos(0.5*copyNo*pi/fAngleArray))*sin(0.5*copyNo*pi/fAngleArray);
-    nFluxHEE[copyNo] = std::pow(cos(0.5*copyNo*pi/fAngleArray), 3./2.)*sin(0.5*copyNo*pi/fAngleArray);
-    nThetaHEE[copyNo] = copyNo*90./fAngleArray;
-    fEnergyT += nFluxHEE[copyNo];
-    nFluxHEE[copyNo] = fEnergyT;
-  }
-  
-  for (G4int copyNo = 0; copyNo < fAngleArray; copyNo++)
-  {
-    nFluxHEE[copyNo] /=  fEnergyT;
-  }
-  
-  
-  G4ParticleDefinition* particleDefinition
-  = G4ParticleTable::GetParticleTable()->FindParticle("neutron");
+
+  G4ParticleDefinition* particleDefinition = G4ParticleTable::GetParticleTable()->FindParticle("neutron");
   fParticleGun->SetParticleDefinition(particleDefinition);
   fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0.,0.,1.));
   fParticleGun->SetParticleEnergy(0.001032720*eV);
