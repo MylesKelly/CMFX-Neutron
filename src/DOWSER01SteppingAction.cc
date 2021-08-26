@@ -56,13 +56,7 @@ DOWSER01SteppingAction* DOWSER01SteppingAction::Instance()
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 DOWSER01SteppingAction::DOWSER01SteppingAction()
-: G4UserSteppingAction(),
-fVolume(0),
-fEnergy(0.),
-kEnergy(0),
-nEnergy(0),
-theta(0), phi(0),px(0),py(0),pz(0),x0(0), y0(0), z0(0), x1(0), y1(0), z1(0), nx0(0), ny0(0), nx1(0), ny1(0),
-ntheta(0), theta0(0), theta1(0), fParticleName(), fParticleNameOld(), numOfCapture(0), Li_x1(0)
+: G4UserSteppingAction(), kEnergy(0), nEnergy(0), fParticleName(), numOfCapture(0)
 {
     fgInstance = this;
 }
@@ -104,9 +98,6 @@ void DOWSER01SteppingAction::UserSteppingAction(const G4Step* step)
 
     //kEnergy = step->GetPreStepPoint()->GetKineticEnergy()/CLHEP::eV;
 
-    //G4cout << "launched " << fParticleName << " w/ energy: " << kEnergy << G4endl;
-    //G4cout << "in logical volume: " << nameLogicVolume << G4endl;
-
     if (fParticleName == "Li7")
     {
       //Incremet Boron-10 capture counter when Li-7 ion is produced
@@ -115,9 +106,9 @@ void DOWSER01SteppingAction::UserSteppingAction(const G4Step* step)
     }
   } 
 
+  //Get particle energy as it enters the Boron-10 thin film:
   if (nameLogicVolume == "Detector" && fParticleName == "neutron")
   {
-    //Get particle energy as it enters the Boron-10 thin film:
     G4double stepEnergy = step->GetPostStepPoint()->GetKineticEnergy()/CLHEP::eV;
 
     //If Energy is not zero, store it in a histogram:
@@ -132,8 +123,6 @@ void DOWSER01SteppingAction::UserSteppingAction(const G4Step* step)
 
 void DOWSER01SteppingAction::Reset()
 {
-    // G4cout << "neutron energy deposit " << fEnergy << "MeV" << G4endl;
-    // fEnergy = 0.;
     G4cout << "Stepping Action Reset Called" << G4endl;
 }
 
