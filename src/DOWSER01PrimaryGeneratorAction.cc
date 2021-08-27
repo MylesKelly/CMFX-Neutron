@@ -85,12 +85,9 @@ void DOWSER01PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   // NEW - SET EVENT INFORMATION
   // Required files:
   // DOWSER01EventInformation.hh
-  
   DOWSER01EventInformation* info = new DOWSER01EventInformation();
   G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
-  
-  // begining of energy assigment
-  
+
   //Set neutron energy
   Eneutron = 2.45;
   
@@ -98,10 +95,10 @@ void DOWSER01PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   analysisManager->FillH1(1, std::log10(Eneutron));
   info->SetEnergyN(Eneutron);
   
-
+  //Distance from the origin of the neutron source
   sourceRadius = 60*cm;  
 
-  //Randomly generate rotation angle
+  //generate random rotation angle from uniform distribution
   rotationAngle = pi * G4UniformRand() + pi/2;
 
   //calculate cartesian coordinates for neutron origin
@@ -113,37 +110,32 @@ void DOWSER01PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   spread_angle = 6 * pi/180;
   G4double max_V = (cos(spread_angle) + 1)/2;
 
+  //This business of U and V variables being first computed and then used to generate spherical angles
+  //comes from spherical point picking, details described here: https://mathworld.wolfram.com/SpherePointPicking.html
   G4double U = G4UniformRand();
   G4double V = G4UniformRand() * (1 - max_V);
   theta = 2*pi*U;
   phi = acos(2*(1 - V) - 1) ; //-spread_angle + 2*spread_angle*G4UniformRand();
 
-  //generate cartesian coordinates for momentum
+  //compute cartesian coordinates for momentum from spherical coordinates generated above
   px0 = sin(phi)*cos(theta);
   py0 = sin(phi)*sin(theta);
   pz0 = -cos(phi);
 
-  //Rotate momentum vector about y axis through angle rotationAngle
+  //Rotate momentum vector about y axis through angle rotationAngle, so zero polar angle always points to the origin
   px1 = px0*cos(-rotationAngle) - pz0*sin(-rotationAngle);
   pz1 = px0*sin(-rotationAngle) + pz0*cos(-rotationAngle);
 
-  //x0 = 12;
-  //y0 = -10 + 20 * G4UniformRand();
-  //z0 = -10 + 20 * G4UniformRand();
-
-  xDiff = (cos(rotationAngle)) - x1;
-  yDiff =  - y1;
-  zDiff = (sin(rotationAngle)) - z1;
-
   fParticleGun->SetParticlePosition(G4ThreeVector(x1, y1, z1));
   fParticleGun->SetParticleMomentumDirection(G4ThreeVector(px1,py0,pz1));
+
+  //Set parameters of event info object so the data can be accessed elsewhere, namely stepping action
   info->SetTheta0(rotationAngle*180.0/pi);
   info->SetTheta1(phi*180.0/pi);
   //analysisManager->FillH1(2, rotationAngle*180.0/pi);
+
   fParticleGun->GeneratePrimaryVertex(anEvent);
   anEvent->SetUserInformation(info);
-
-
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
