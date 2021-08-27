@@ -61,7 +61,7 @@ void DOWSER01RunAction::BeginOfRunAction(const G4Run* run)
   G4cout << "Using " << analysisManager->GetType() 
          << " analysis manager" << G4endl;
   
-  // Open an output file, will save with name fileName
+  // Open an output file, will save with name fileName.root in build directory
   G4String fileName = "CMFX_Neutron_Radius_Test";
   analysisManager->OpenFile(fileName);
 
