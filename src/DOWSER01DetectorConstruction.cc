@@ -133,11 +133,11 @@ G4VPhysicalVolume* DOWSER01DetectorConstruction::Construct()
   G4cout << G4endl << "The materials defined are: " << G4endl << G4endl;
   G4cout << *(G4Material::GetMaterialTable()) << G4endl;
   G4cout << "************  end of material table  ************" << G4endl;
-  
+
   //============================================================================
   //      Definitions of Solids, Logical Volumes, Physical Volumes
   //============================================================================
-  
+
   //-------------
   // World Volume
   //-------------
@@ -175,7 +175,7 @@ G4VPhysicalVolume* DOWSER01DetectorConstruction::Construct()
   G4double Det_z = HDPE_z;
 
   //Boron-10 Film:
-  G4double Boron_x = 0.001 *mm;
+  G4double Boron_x = 0.002 *mm;
   G4double Boron_y = HDPE_y;
   G4double Boron_z = HDPE_z;
 
@@ -247,4 +247,3 @@ G4VPhysicalVolume* DOWSER01DetectorConstruction::Construct()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
