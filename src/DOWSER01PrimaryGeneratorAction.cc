@@ -134,7 +134,9 @@ void DOWSER01PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   info->SetTheta1(phi*180.0/pi);
   //analysisManager->FillH1(2, rotationAngle*180.0/pi);
 
+  //Generate event
   fParticleGun->GeneratePrimaryVertex(anEvent);
+  //Log user specified event data
   anEvent->SetUserInformation(info);
 }
 

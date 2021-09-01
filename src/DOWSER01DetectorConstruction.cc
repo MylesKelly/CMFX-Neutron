@@ -177,10 +177,8 @@ G4VPhysicalVolume* DOWSER01DetectorConstruction::Construct()
 
   //SOLIDS:
 
-
   //G4VSolid* Attachment = new G4SubtractionSolid("Attachment", HDPESolid, HDPESubtraction, rotMat, G4ThreeVector(0, 0, HDPE_z/2));
-  G4VSolid* HDPESolid = new G4Trd("HDPE", HDPE_x1/2, HDPE_x2/2, HDPE_y1/2, HDPE_y2/2, HDPE_z/2);
-
+  G4VSolid* HDPESolid = new G4Trd("HDPE", HDPE_x1/2, HDPE_x2/2, HDPE_y1/2, HDPE_y2/2, HDPE_z/2);\
   G4VSolid* Detector = new G4Box("Detector", Det_x/2, Det_y/2, Det_z);
 
   //LOGICAL VOLUMES:
